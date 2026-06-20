@@ -15,7 +15,8 @@ import re
 import os
 from firecrawl import Firecrawl
 
-FIRECRAWL_API_KEY = "fc-acd532c8ad544009b5b6c0ff5724aded"
+# API Key desde variable de entorno
+FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
 
 
 def extract_links(content):
@@ -187,6 +188,16 @@ def generate_wiki(name, url, content):
 
 
 def main():
+    # Validar API key
+    if not FIRECRAWL_API_KEY:
+        print("\nERROR: Falta FIRECRAWL_API_KEY")
+        print("\nConfigura la variable de entorno:")
+        print("  PowerShell: $env:FIRECRAWL_API_KEY = 'tu-api-key'")
+        print("  CMD: set FIRECRAWL_API_KEY=tu-api-key")
+        print("  Linux/Mac: export FIRECRAWL_API_KEY='tu-api-key'")
+        print("\nObtiene tu key en: https://firecrawl.dev")
+        sys.exit(1)
+    
     if len(sys.argv) < 3:
         print("\n" + "="*50)
         print("INVESTIGADOR AUTO")

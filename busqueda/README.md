@@ -8,6 +8,27 @@ Genera documentacion tipo Wikipedia en Markdown de cualquier empresa/sitio web.
 pip install firecrawl-py
 ```
 
+## Configuracion
+
+Configura tu API key de Firecrawl como variable de entorno:
+
+**Windows (PowerShell):**
+```powershell
+$env:FIRECRAWL_API_KEY = "tu-api-key"
+```
+
+**Windows (CMD):**
+```cmd
+set FIRECRAWL_API_KEY=tu-api-key
+```
+
+**Linux/Mac:**
+```bash
+export FIRECRAWL_API_KEY="tu-api-key"
+```
+
+Obtiene tu API key en: https://firecrawl.dev
+
 ## Uso
 
 ```bash
