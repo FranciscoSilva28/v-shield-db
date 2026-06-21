@@ -1,5 +1,5 @@
 -- =================================================================
--- SCRIPT DDL MAESTRO - ARQUITECTURA FINAL ACTUALIZADA
+-- SCRIPT DDL MAESTRO - ARQUITECTURA FINAL ACTUALIZADA (V2)
 -- =================================================================
 
 -- 1. Crear tabla de empresas
@@ -7,7 +7,7 @@ CREATE TABLE public.empresas (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     nombre_empresa VARCHAR(150) NOT NULL,
     sector TEXT[], 
-    datos_scraping TEXT, -- CAMBIO: Ahora almacena el contenido en formato Markdown
+    datos_scraping TEXT, -- Almacena el contenido en formato Markdown
     fecha_registro TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -43,7 +43,7 @@ CREATE TABLE public.simulaciones (
     token_rastreo UUID DEFAULT gen_random_uuid() UNIQUE NULL,
     segundos_en_caer INTEGER NULL,
     fecha_envio TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    fecha_interaccion TIMESTAMP WITH TIME ZONE NULL -- CAMBIO: Explícitamente inicializado en NULL
+    fecha_interaccion TIMESTAMP WITH TIME ZONE NULL
 );
 
 -- 5. Crear tabla de reportes técnicos
@@ -54,8 +54,18 @@ CREATE TABLE public.reportes (
     fecha_generacion TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 6. Crear tabla de sesiones (Módulo unificado de llamadas)
+CREATE TABLE public.sesiones (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    empleado_id UUID NOT NULL REFERENCES public.empleados(id) ON DELETE CASCADE,
+    tipo_canal VARCHAR(20) NOT NULL CHECK (tipo_canal IN ('WEBRTC', 'ALTUR')),
+    resumen_markdown TEXT NULL, -- Resumen generado por el agente
+    fecha_inicio TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    fecha_fin TIMESTAMP WITH TIME ZONE NULL
+);
+
 -- =================================================================
--- LOGICA DE PROGRAMACION INTERNA (TRIGGERS)
+-- LOGICA DE PROGRAMACION
 -- =================================================================
 CREATE OR REPLACE FUNCTION public.verificar_autosuplantacion_circular()
 RETURNS TRIGGER AS $$
@@ -90,3 +100,6 @@ CREATE INDEX idx_simulaciones_voz ON public.simulaciones(voz_id);
 CREATE INDEX idx_simulaciones_token ON public.simulaciones(token_rastreo);
 CREATE INDEX idx_simulaciones_estado ON public.simulaciones(estado);
 CREATE INDEX idx_reportes_simulacion ON public.reportes(simulacion_id);
+-- Índices para el nuevo módulo de sesiones
+CREATE INDEX idx_sesiones_empleado ON public.sesiones(empleado_id);
+CREATE INDEX idx_sesiones_canal ON public.sesiones(tipo_canal);
